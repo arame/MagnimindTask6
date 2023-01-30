@@ -1,0 +1,13 @@
+
+node_modules 
+*.env 
+.env* 
+*.local
+*.html
+*.png
+*.csv
+*.pkl
+node_modules 
+*.env 
+.env* 
+*.local
