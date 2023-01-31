@@ -3,8 +3,8 @@ class gl:
     # column names: ['tweetID', 'crDate','edInput', 'editor', 'engages', 'isApproved', 'isEdNeed', 'isRT', 'likes', 'photoUrl', 'retweets', 'rtUsID', 'text', 'topicName', 'usFlwrs', 'usID', 'usName', 'videoUrl']
     photoUrl = "photoUrl"
     topic = "topicName"
-    nature = "Nature"
-    is_nature = "IsNature"
+    business = "Business"
+    is_business = "IsBusiness"
     usID = "usID"
     usName = "usName"
     output_folders = ["Pickle"]
