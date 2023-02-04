@@ -2,8 +2,11 @@ import pickle, os
 import logging
 
 def save_pickle_object(data, filename):
+    folder = "pickle"
+    if os.path.exists(folder) ==  False:
+        os.mkdir(folder)
     # open a file where data need to be stored
-    path = os.path.join("pickle", filename)
+    path = os.path.join(folder, filename)
     logging.info(f"Saving pickle file from: {path}")
     with open(path, 'wb') as file:
         # dump information to the file

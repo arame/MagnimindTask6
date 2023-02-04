@@ -1,14 +1,14 @@
 import time, copy
 import torch
 
-def train_model(model, criterion, optimizer, scheduler, dataloaders, num_epochs=25):
+def train_model(model, criterion, optimizer, scheduler, dataloaders, dataset_sizes, num_epochs=25):
     since = time.time()
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
 
-    for epoch in range(num_epochs):
-        print(f'Epoch {epoch}/{num_epochs - 1}')
+    for epoch in range(1, num_epochs + 1):
+        print(f'Epoch {epoch}/{num_epochs}')
         print('-' * 10)
 
         # Each epoch has a training and validation phase
