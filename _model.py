@@ -1,15 +1,17 @@
 import time, copy
 import torch
+from _checkpoint import SaveBestModel, save_model
+from _pytorchtools import EarlyStopping
 
-def train_model(model, criterion, optimizer, scheduler, dataloaders, dataset_sizes, num_epochs=25):
+def train_model(model, logging, criterion, optimizer, scheduler, dataloaders, dataset_sizes, checkpoint_path, patience, num_epochs=25):
     since = time.time()
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
-
+    save_best_model = SaveBestModel(checkpoint_path)
+    early_stopping = EarlyStopping(patience=patience, verbose=True)
     for epoch in range(1, num_epochs + 1):
-        print(f'Epoch {epoch}/{num_epochs}')
-        print('-' * 10)
+        logging.info(f'Epoch {epoch}/{num_epochs}')
+        logging.info('-' * 10)
 
         # Each epoch has a training and validation phase
         for phase in ['train', 'val']:
@@ -50,19 +52,23 @@ def train_model(model, criterion, optimizer, scheduler, dataloaders, dataset_siz
             epoch_loss = running_loss / dataset_sizes[phase]
             epoch_acc = running_corrects.double() / dataset_sizes[phase]
 
-            print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
+            logging.info(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
 
             # deep copy the model
-            if phase == 'val' and epoch_acc > best_acc:
-                best_acc = epoch_acc
-                best_model_wts = copy.deepcopy(model.state_dict())
+            if phase == 'val':
+                early_stopping(epoch_loss)
+                if early_stopping.early_stop:
+                    logging.info(f"Early stopping for epoch: {epoch}")
+                    break
+
+                save_best_model(epoch_acc, epoch, model, optimizer, criterion)
 
         print()
 
     time_elapsed = time.time() - since
-    print(f'Training complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s')
-    print(f'Best val Acc: {best_acc:4f}')
+    logging.info(f'Training complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s')
+    logging.info(f'Best val Acc: {best_acc:4f}')
 
     # load best model weights
-    model.load_state_dict(best_model_wts)
+    model = torch.load(checkpoint_path)
     return model

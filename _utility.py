@@ -4,6 +4,8 @@ class gl:
     pkl_train_loader = "pkle_train_loader.pkl"
     pkl_val_loader = "pkle_val_loader.pkl"
     pkl_test_loader = "pkle_test_loader.pkl"
+    chk_resnet_model = "chk_resnet_model.pt"
+    chk_dir = "Checkpoint"
     # column names: ['tweetID', 'crDate','edInput', 'editor', 'engages', 'isApproved', 'isEdNeed', 'isRT', 'likes', 'photoUrl', 'retweets', 'rtUsID', 'text', 'topicName', 'usFlwrs', 'usID', 'usName', 'videoUrl']
     photoUrl = "photoUrl"
     topic = "topicName"
