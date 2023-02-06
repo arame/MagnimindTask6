@@ -56,14 +56,13 @@ def train_model(model, logging, criterion, optimizer, scheduler, dataloaders, da
 
             # deep copy the model
             if phase == 'val':
-                early_stopping(epoch_loss)
-                if early_stopping.early_stop:
-                    logging.info(f"Early stopping for epoch: {epoch}")
-                    break
+                early_stopping(epoch_acc)
+                if early_stopping.early_stop == False:
+                    save_best_model(epoch_acc, epoch, model, optimizer, criterion)
 
-                save_best_model(epoch_acc, epoch, model, optimizer, criterion)
-
-        print()
+        if early_stopping.early_stop:
+            logging.info(f"Early stopping for epoch: {epoch}")
+            break
 
     time_elapsed = time.time() - since
     logging.info(f'Training complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s')

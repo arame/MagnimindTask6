@@ -1,7 +1,7 @@
 import numpy
 
 # This library for Early Stopping has been adapted from https://github.com/Bjarten/early-stopping-pytorch
-class EarlyStopping:
+class   EarlyStopping:
     """Early stops the training if validation accuracy doesn't improve after a given patience."""
     def __init__(self, patience=7, verbose=False, delta=0, path='checkpoint.pt', trace_func=print):
         """
