@@ -31,10 +31,10 @@ class   EarlyStopping:
         score = val_accuracy
         if self.best_score is None:
             self.best_score = score
-        elif score > self.best_score + self.delta:
+        elif score < self.best_score + self.delta:
             self.counter += 1
             self.trace_func(f'EarlyStopping counter: {self.counter} out of {self.patience}')
-            if self.counter <= self.patience:
+            if self.counter >= self.patience:
                 self.early_stop = True
         else:
             self.best_score = score
