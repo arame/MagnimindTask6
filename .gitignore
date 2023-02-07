@@ -14,3 +14,4 @@ node_modules
 *.jpg
 *.pt
 *.pth
+Checkpoint/chk_resnet_model.pt
