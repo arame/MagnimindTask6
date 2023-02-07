@@ -27,6 +27,7 @@ class SaveBestModel:
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'loss': criterion,
+                'accuracy': self.best_valid_accuracy,
                 }, self.checkpoint_path)
 
 def save_model(epochs, model, optimizer, criterion, final_checkpoint_path, logging):

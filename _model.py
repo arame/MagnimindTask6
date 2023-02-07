@@ -1,4 +1,5 @@
-import time, copy
+import time
+import numpy as np
 import torch
 from _checkpoint import SaveBestModel, save_model
 from _pytorchtools import EarlyStopping
@@ -6,9 +7,12 @@ from _pytorchtools import EarlyStopping
 def train_model(model, logging, criterion, optimizer, scheduler, dataloaders, dataset_sizes, checkpoint_path, patience, num_epochs=25):
     since = time.time()
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    best_acc = 0.0
     save_best_model = SaveBestModel(checkpoint_path)
     early_stopping = EarlyStopping(patience=patience, verbose=True)
+    epoch_train_losses = []
+    epoch_train_accuracy = []
+    epoch_val_losses = []
+    epoch_val_accuracy = []
     for epoch in range(1, num_epochs + 1):
         logging.info(f'Epoch {epoch}/{num_epochs}')
         logging.info('-' * 10)
@@ -45,7 +49,7 @@ def train_model(model, logging, criterion, optimizer, scheduler, dataloaders, da
 
                 # statistics
                 running_loss += loss.item() * inputs.size(0)
-                running_corrects += torch.sum(preds == labels.data)
+                running_corrects += torch.sum(preds == labels.data).item()
             if phase == 'train':
                 scheduler.step()
 
@@ -54,11 +58,16 @@ def train_model(model, logging, criterion, optimizer, scheduler, dataloaders, da
 
             logging.info(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
 
-            # deep copy the model
+            # check for early stopping and if instead the best model, save it as checkpoint
             if phase == 'val':
+                epoch_val_accuracy.append(epoch_acc)
+                epoch_val_losses.append(epoch_loss)
                 early_stopping(epoch_acc)
                 if early_stopping.early_stop == False:
                     save_best_model(epoch_acc, epoch, model, optimizer, criterion)
+            else:
+                epoch_train_accuracy.append(epoch_acc)
+                epoch_train_losses.append(epoch_loss)                
 
         if early_stopping.early_stop:
             logging.info(f"Early stopping for epoch: {epoch}")
@@ -66,8 +75,8 @@ def train_model(model, logging, criterion, optimizer, scheduler, dataloaders, da
 
     time_elapsed = time.time() - since
     logging.info(f'Training complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s')
-    logging.info(f'Best val Acc: {best_acc:4f}')
+    logging.info(f'Best val Acc: {early_stopping.best_score:4f}')
 
     # load best model weights
     model = torch.load(checkpoint_path)
-    return model
+    return model, epoch_train_accuracy, epoch_train_losses, epoch_val_accuracy, epoch_val_losses
