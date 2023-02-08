@@ -1,7 +1,7 @@
 import time
 import numpy as np
 import torch
-from _checkpoint import SaveBestModel, save_model
+from _checkpoint import SaveBestModel
 from _pytorchtools import EarlyStopping
 
 def train_model(model, logging, criterion, optimizer, scheduler, dataloaders, dataset_sizes, checkpoint_path, patience, num_epochs=25):
